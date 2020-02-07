@@ -274,6 +274,7 @@ pub struct Settings {
     backtrace_first: bool,
     most_recent_first: bool,
     lineno_suffix: bool,
+    omit_backtrace: bool,
 }
 
 impl Default for Settings {
@@ -285,6 +286,7 @@ impl Default for Settings {
             backtrace_first: true,
             most_recent_first: true,
             lineno_suffix: false,
+            omit_backtrace: true,
         }
     }
 }
@@ -459,12 +461,12 @@ fn print_backtrace(bt: Option<&backtrace::Backtrace>, s: &Settings) -> Result<()
 }
 
 fn print_panic_and_backtrace(pi: &PanicInfo, s: &Settings) -> Result<(), io::Error> {
-    if s.backtrace_first {
+    if s.backtrace_first && !s.omit_backtrace {
         print_backtrace_info(s)?;
         writeln!(&s.out)?;
     }
     print_panic_info(pi, s)?;
-    if !s.backtrace_first {
+    if !s.backtrace_first && !s.omit_backtrace {
         writeln!(&s.out)?;
         print_backtrace_info(s)?;
     }
